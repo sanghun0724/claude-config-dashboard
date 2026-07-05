@@ -1,0 +1,53 @@
+name: ClaudeConfigDashboard
+options:
+  bundleIdPrefix: com.claudeconfigdashboard
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.developer-tools"
+    INFOPLIST_KEY_NSHumanReadableCopyright: "MIT License"
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_STYLE: Automatic
+    DEAD_CODE_STRIPPING: YES
+targets:
+  ClaudeConfigDashboard:
+    type: application
+    platform: macOS
+    sources:
+      - Sources
+    settings:
+      base:
+        PRODUCT_NAME: ClaudeConfigDashboard
+        PRODUCT_BUNDLE_IDENTIFIER: com.claudeconfigdashboard.ClaudeConfigDashboard
+        # Unsandboxed: this tool reads ~/.claude in the user's home directory.
+        ENABLE_APP_SANDBOX: NO
+  ClaudeConfigDashboardTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests
+      # Pure logic compiled directly into the test bundle — no app host needed.
+      - path: Sources/SettingsSerializer.swift
+      - path: Sources/WriteGuard.swift
+      - path: Sources/FrontmatterParser.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.claudeconfigdashboard.ClaudeConfigDashboardTests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  ClaudeConfigDashboard:
+    build:
+      targets:
+        ClaudeConfigDashboard: all
+        ClaudeConfigDashboardTests: [test]
+    test:
+      targets:
+        - ClaudeConfigDashboardTests
+    run:
+      config: Debug
