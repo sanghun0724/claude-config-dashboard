@@ -63,7 +63,7 @@ private struct MCPServerCard: View {
         VStack(alignment: .leading, spacing: Theme.Space.md) {
             // Top row: name field / kind picker / delete
             HStack(spacing: Theme.Space.sm) {
-                ThemedField(prompt: "name", text: $server.name)
+                ThemedField(prompt: String(localized: "name"), text: $server.name)
                 SegmentedControl(
                     selection: $server.kind,
                     options: [
@@ -73,17 +73,17 @@ private struct MCPServerCard: View {
                     ]
                 )
                 .frame(width: 170)
-                IconButton("trash", role: .destructive, help: "Delete server") {
+                IconButton("trash", role: .destructive, help: String(localized: "Delete server")) {
                     confirmingDelete = true
                 }
             }
 
             // Field rows: stdio vs network
             if server.kind == "stdio" {
-                MCPLabeledField(label: "command", prompt: "command", text: $server.command)
-                MCPLabeledField(label: "args",    prompt: "args",    text: $server.args)
+                MCPLabeledField(label: String(localized: "command"), prompt: String(localized: "command"), text: $server.command)
+                MCPLabeledField(label: String(localized: "args"),    prompt: String(localized: "args"),    text: $server.args)
             } else {
-                MCPLabeledField(label: "url", prompt: "url", text: $server.url)
+                MCPLabeledField(label: String(localized: "url"), prompt: String(localized: "url"), text: $server.url)
             }
         }
         .padding(Theme.Space.md)

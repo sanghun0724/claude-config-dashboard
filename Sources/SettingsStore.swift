@@ -14,6 +14,15 @@ enum PermissionKind: String, CaseIterable, Identifiable {
         case .deny: return SemanticColor.error
         }
     }
+
+    /// Localized display label — `rawValue` itself stays the fixed English identity.
+    var displayLabel: String {
+        switch self {
+        case .allow: return String(localized: "Allow")
+        case .ask: return String(localized: "Ask")
+        case .deny: return String(localized: "Deny")
+        }
+    }
 }
 
 /// Live, editable model for settings.json permissions. Read for env (#6 explicit save,
@@ -64,7 +73,7 @@ final class SettingsStore: ObservableObject, GuardedStore {
         guard let data = try? Data(contentsOf: fileURL.resolvingSymlinksInPath()),
               let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             isError = true
-            statusMessage = "settings.json not found or invalid"
+            statusMessage = String(localized: "settings.json not found or invalid")
             return
         }
         root = dict
@@ -196,15 +205,15 @@ final class SettingsStore: ObservableObject, GuardedStore {
         statusMessage = nil
         // #4 validate
         if (allow + ask + deny).contains(where: { $0.trimmingCharacters(in: .whitespaces).isEmpty }) {
-            fail("Empty rule not allowed")
+            fail(String(localized: "Empty rule not allowed"))
             return
         }
         if envVars.contains(where: { $0.key.trimmingCharacters(in: .whitespaces).isEmpty }) {
-            fail("Empty env key not allowed")
+            fail(String(localized: "Empty env key not allowed"))
             return
         }
         if Set(envVars.map(\.key)).count != envVars.count {
-            fail("Duplicate env key not allowed")
+            fail(String(localized: "Duplicate env key not allowed"))
             return
         }
         var merged = SettingsSerializer.apply(root: root, allow: allow, ask: ask, deny: deny)
@@ -217,7 +226,7 @@ final class SettingsStore: ObservableObject, GuardedStore {
             if hooks.isEmpty { merged["hooks"] = nil } else { merged["hooks"] = hooks }
         }
         guard let data = try? SettingsSerializer.serialize(merged) else {
-            fail("Serialization failed")
+            fail(String(localized: "Serialization failed"))
             return
         }
         do {
@@ -228,7 +237,7 @@ final class SettingsStore: ObservableObject, GuardedStore {
             origEnv = envVars
             loadHooks()   // refresh raw groups + clear dirty
             canRestore = true
-            statusMessage = "Saved — backup created."
+            statusMessage = String(localized: "Saved — backup created.")
         } catch let error as WriteGuardError where error == .staleFile {
             isStale = true
             fail(error.localizedDescription)
@@ -241,7 +250,7 @@ final class SettingsStore: ObservableObject, GuardedStore {
         do {
             try guardian.restoreLatest(expectedHash: loadedHash)
             load()
-            statusMessage = "Restored from latest backup."
+            statusMessage = String(localized: "Restored from latest backup.")
         } catch {
             fail(error.localizedDescription)
         }

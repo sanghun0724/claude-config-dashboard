@@ -49,7 +49,7 @@ final class MCPStore: ObservableObject, GuardedStore {
         guard let data = try? Data(contentsOf: fileURL.resolvingSymlinksInPath()),
               let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             isError = true
-            statusMessage = "~/.claude.json not found or invalid"
+            statusMessage = String(localized: "~/.claude.json not found or invalid")
             return
         }
         root = dict
@@ -92,8 +92,8 @@ final class MCPStore: ObservableObject, GuardedStore {
         isError = false
         statusMessage = nil
         let names = servers.map { $0.name.trimmingCharacters(in: .whitespaces) }
-        if names.contains(where: \.isEmpty) { fail("Empty server name not allowed"); return }
-        if Set(names).count != names.count { fail("Duplicate server name not allowed"); return }
+        if names.contains(where: \.isEmpty) { fail(String(localized: "Empty server name not allowed")); return }
+        if Set(names).count != names.count { fail(String(localized: "Duplicate server name not allowed")); return }
 
         var rebuilt: [String: Any] = [:]
         for e in servers {
@@ -116,7 +116,7 @@ final class MCPStore: ObservableObject, GuardedStore {
         merged["mcpServers"] = rebuilt
         // Compact (no pretty/sorted) to match ~/.claude.json's runtime style.
         guard let data = try? JSONSerialization.data(withJSONObject: merged, options: [.withoutEscapingSlashes]) else {
-            fail("Serialization failed")
+            fail(String(localized: "Serialization failed"))
             return
         }
         do {
@@ -126,7 +126,7 @@ final class MCPStore: ObservableObject, GuardedStore {
             loadedHash = WriteGuard.hash(data)
             origServers = servers
             canRestore = true
-            statusMessage = "Saved — backup created."
+            statusMessage = String(localized: "Saved — backup created.")
         } catch let error as WriteGuardError where error == .staleFile {
             isStale = true
             fail(error.localizedDescription)
@@ -139,7 +139,7 @@ final class MCPStore: ObservableObject, GuardedStore {
         do {
             try guardian.restoreLatest(expectedHash: loadedHash)
             load()
-            statusMessage = "Restored from latest backup."
+            statusMessage = String(localized: "Restored from latest backup.")
         } catch {
             fail(error.localizedDescription)
         }

@@ -86,7 +86,7 @@ private struct HookCard: View {
                     Chip(text: "new", tone: .accent)
                 }
                 Spacer()
-                IconButton("trash", role: .destructive, help: "Delete hook") {
+                IconButton("trash", role: .destructive, help: String(localized: "Delete hook")) {
                     confirmingDelete = true
                 }
             }
@@ -170,8 +170,8 @@ private struct AddHookCard: View {
                 .fixedSize()
             }
 
-            ThemedField(prompt: "matcher (e.g. * or Bash)", text: $newMatcher)
-            ThemedField(prompt: "command", text: $newCommand, mono: true)
+            ThemedField(prompt: String(localized: "matcher (e.g. * or Bash)"), text: $newMatcher)
+            ThemedField(prompt: String(localized: "command"), text: $newCommand, mono: true)
 
             HStack {
                 Spacer()

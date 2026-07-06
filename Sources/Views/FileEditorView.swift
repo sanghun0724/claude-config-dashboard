@@ -68,7 +68,7 @@ struct FileEditorView: View {
     private var topBar: some View {
         HStack(spacing: Theme.Space.sm) {
             VStack(alignment: .leading, spacing: 2) {
-                Kicker(text: "편집 중 · \((path as NSString).lastPathComponent)")
+                Kicker(text: "\(String(localized: "Editing")) · \((path as NSString).lastPathComponent)")
                 HStack(spacing: 6) {
                     Text(title)
                         .font(Theme.Typo.serifTitle)
@@ -88,11 +88,15 @@ struct FileEditorView: View {
 
             SegmentedControl(
                 selection: $mode,
-                options: EditorMode.allCases.map { (value: $0, label: $0.rawValue) }
+                options: [
+                    (value: .raw, label: String(localized: "Raw")),
+                    (value: .live, label: String(localized: "Live")),
+                    (value: .preview, label: String(localized: "Preview"))
+                ]
             )
             .frame(width: 190)
 
-            IconButton("trash", role: .destructive, help: "Delete this file (backed up first)") {
+            IconButton("trash", role: .destructive, help: String(localized: "Delete this file (backed up first)")) {
                 confirmingDelete = true
             }
         }
@@ -135,7 +139,7 @@ struct FileEditorView: View {
     /// on first close and never shown again.
     private var liveModeHint: some View {
         HStack(spacing: 8) {
-            Text("마크다운 기호는 커서가 있는 줄에서만 보여요.")
+            Text("Markdown symbols only show on the line the cursor is on.")
                 .font(.system(size: 11.5, design: .serif))
                 .italic()
                 .foregroundStyle(Theme.inkSecondary)

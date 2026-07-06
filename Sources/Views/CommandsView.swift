@@ -10,7 +10,7 @@ struct CommandsView: View {
             VStack(spacing: 0) {
                 header
                 if commands.isEmpty {
-                    EmptyHint(label: "commands", dir: dir)
+                    EmptyHint(label: String(localized: "commands"), dir: dir)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {

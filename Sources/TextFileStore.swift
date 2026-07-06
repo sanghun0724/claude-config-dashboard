@@ -34,7 +34,7 @@ final class TextFileStore: ObservableObject, GuardedStore {
         statusMessage = nil
         guard let data = try? Data(contentsOf: fileURL) else {
             isError = true
-            statusMessage = "File not readable"
+            statusMessage = String(localized: "File not readable")
             return
         }
         text = String(decoding: data, as: UTF8.self)
@@ -57,7 +57,7 @@ final class TextFileStore: ObservableObject, GuardedStore {
             origText = text
             loadedHash = WriteGuard.hash(Data(text.utf8))
             canRestore = true
-            statusMessage = "Saved — backup created."
+            statusMessage = String(localized: "Saved — backup created.")
         } catch let error as WriteGuardError where error == .staleFile {
             isStale = true
             fail(error.localizedDescription)
@@ -81,7 +81,7 @@ final class TextFileStore: ObservableObject, GuardedStore {
         do {
             try guardian.restoreLatest(expectedHash: loadedHash)
             load()
-            statusMessage = "Restored from latest backup."
+            statusMessage = String(localized: "Restored from latest backup.")
         } catch {
             fail(error.localizedDescription)
         }

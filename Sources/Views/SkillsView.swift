@@ -14,8 +14,8 @@ struct SkillsView: View {
     @State private var selectedPath: String?
     @FocusState private var searchFocused: Bool
 
-    enum ViewMode: String, CaseIterable {
-        case reading = "읽기", gallery = "갤러리"
+    enum ViewMode: Hashable, CaseIterable {
+        case reading, gallery
     }
 
     private var filtered: [Skill] {
@@ -36,7 +36,7 @@ struct SkillsView: View {
                 header
                 Group {
                     if skills.isEmpty {
-                        EmptyHint(label: "skills", dir: dir)
+                        EmptyHint(label: String(localized: "skills"), dir: dir)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else if viewMode == .reading {
                         readingRoom
@@ -69,11 +69,14 @@ struct SkillsView: View {
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(Theme.inkTertiary)
             Spacer()
-            SearchField(prompt: "스킬 검색", text: $query, focus: $searchFocused)
+            SearchField(prompt: String(localized: "Search skills"), text: $query, focus: $searchFocused)
                 .frame(width: 200)
             SegmentedControl(
                 selection: $viewMode,
-                options: ViewMode.allCases.map { (value: $0, label: $0.rawValue) }
+                options: [
+                    (value: .reading, label: String(localized: "Reading")),
+                    (value: .gallery, label: String(localized: "Gallery"))
+                ]
             )
             .frame(width: 140)
         }
@@ -102,7 +105,7 @@ struct SkillsView: View {
             if let skill = selected {
                 ReadingPane(skill: skill, onChange: onChange)
             } else {
-                EmptySearchHint(label: "skills", query: $query)
+                EmptySearchHint(label: String(localized: "skills"), query: $query)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
@@ -113,7 +116,7 @@ struct SkillsView: View {
     @ViewBuilder
     private var gallery: some View {
         if filtered.isEmpty {
-            EmptySearchHint(label: "skills", query: $query)
+            EmptySearchHint(label: String(localized: "skills"), query: $query)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             ScrollView {
@@ -192,7 +195,7 @@ private struct ReadingPane: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Kicker(text: "Skill · \(isExternal ? "External" : "Personal")")
+                Kicker(text: "\(String(localized: "Skill")) · \(isExternal ? String(localized: "External") : String(localized: "Personal"))")
                     .padding(.bottom, 14)
 
                 Text(skill.name)
@@ -244,7 +247,7 @@ private struct ReadingPane: View {
                     NavigationLink {
                         FileEditorView(title: skill.name, path: skill.path, onChange: onChange)
                     } label: {
-                        Text("편집")
+                        Text("Edit")
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(Theme.accentStrong)
                             .padding(.horizontal, 16)
@@ -259,7 +262,7 @@ private struct ReadingPane: View {
 
                     HStack(spacing: 7) {
                         Circle().fill(Theme.success).frame(width: 7, height: 7)
-                        Text("읽기 전용 미리보기 · 편집 시 자동 백업")
+                        Text("Read-only preview · auto-backed up on edit")
                             .font(.system(size: 12))
                             .foregroundStyle(Theme.successInk)
                     }
@@ -278,13 +281,13 @@ private struct ReadingPane: View {
         let hasModified = skill.modified != nil
         return HStack(spacing: 8) {
             if !skill.tools.isEmpty {
-                Text("\(skill.tools.count)개 도구")
+                Text("\(skill.tools.count) tools")
                 if hasModified || hasLevel || hasHint {
                     Text("·").foregroundStyle(Theme.inkTertiary)
                 }
             }
             if let modified = skill.modified {
-                Text("업데이트 \(relativeTime(modified))")
+                Text("Updated \(relativeTime(modified))")
                 if hasLevel || hasHint {
                     Text("·").foregroundStyle(Theme.inkTertiary)
                 }
@@ -380,7 +383,7 @@ private struct GalleryCard: View {
                 Spacer(minLength: 0)
                 HStack(spacing: 8) {
                     Chip(
-                        text: skill.path.contains("/.claude/") ? "Personal" : "External",
+                        text: skill.path.contains("/.claude/") ? String(localized: "Personal") : String(localized: "External"),
                         tone: skill.path.contains("/.claude/") ? .neutral : .accent
                     )
                     if !skill.tools.isEmpty {

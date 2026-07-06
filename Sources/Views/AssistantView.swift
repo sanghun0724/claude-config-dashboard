@@ -50,7 +50,7 @@ struct AssistantView: View {
 
     private var header: some View {
         HStack(spacing: Theme.Space.md) {
-            Text("분석")
+            Text("Analyze")
                 .font(Theme.Typo.serifTitle)
                 .foregroundStyle(Theme.ink)
             Text("claude CLI")
@@ -59,7 +59,10 @@ struct AssistantView: View {
             Spacer()
             SegmentedControl(
                 selection: $assistant.mode,
-                options: [(value: .analyze, label: "분석"), (value: .chat, label: "대화")]
+                options: [
+                    (value: .analyze, label: String(localized: "Analyze")),
+                    (value: .chat, label: String(localized: "Chat"))
+                ]
             )
             .frame(width: 140)
         }
@@ -163,7 +166,7 @@ private struct AnalyzePane: View {
                         }
                     }
                 } else if !running {
-                    Text("구성 인벤토리를 claude CLI 로 보내 겹치는 스킬, 죽은 경로, 잠든 항목을 함께 돌아봅니다.")
+                    Text("Sends your config inventory to the claude CLI to review overlapping skills, dead paths, and dormant items together.")
                         .font(Theme.Typo.serifBody)
                         .foregroundStyle(Theme.inkSecondary)
                         .lineSpacing(6)
@@ -188,12 +191,12 @@ private struct AnalyzePane: View {
                 .font(.system(size: 13, design: .monospaced))
             Spacer(minLength: Theme.Space.sm)
             status
-            Button(running ? "실행 중…" : (hasRun ? "다시 실행" : "실행")) {
+            Button(running ? "Running…" : (hasRun ? "Run again" : "Run")) {
                 Task { await analyze() }
             }
             .buttonStyle(GhostButtonStyle())
             .disabled(running)
-            .help("구성 인벤토리를 claude CLI (model: sonnet) 로 보냅니다")
+            .help("Sends your config inventory to the claude CLI (model: sonnet)")
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -210,14 +213,14 @@ private struct AnalyzePane: View {
         if running {
             HStack(spacing: 6) {
                 ProgressView().controlSize(.small)
-                Text("실행 중")
+                Text("Running")
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundStyle(Theme.inkSecondary)
             }
         } else if hasRun {
             HStack(spacing: 6) {
                 Circle().fill(Theme.success).frame(width: 6, height: 6)
-                Text(duration.map { String(format: "완료 · %.1fs", $0) } ?? "완료")
+                Text(duration.map { String(localized: "Done · \(String(format: "%.1f", $0))s") } ?? String(localized: "Done"))
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundStyle(Theme.successInk)
             }
@@ -229,11 +232,11 @@ private struct AnalyzePane: View {
     private var headline: some View {
         Group {
             if suggestions.isEmpty {
-                Text("당신의 서재를 처음부터 끝까지 훑어봤어요. 손볼 곳 없이 잘 정돈돼 있어요.")
+                Text("I went through your whole library, start to finish. Nothing to fix — it's in good shape.")
             } else {
-                Text("당신의 서재를 처음부터 끝까지 훑어봤어요. 대체로 잘 정돈돼 있고, 손볼 만한 곳이 ")
-                    + Text("\(suggestions.count)군데").foregroundStyle(Theme.accentStrong)
-                    + Text(" 보여요.")
+                Text("I went through your whole library, start to finish. It's mostly in good shape, with ")
+                    + Text("\(suggestions.count) spots").foregroundStyle(Theme.accentStrong)
+                    + Text(" worth a look.")
             }
         }
         .font(.system(size: 21, design: .serif))
@@ -243,13 +246,12 @@ private struct AnalyzePane: View {
     }
 
     private var countsLine: String {
-        "스킬 \(data.skills.count) · 에이전트 \(data.agents.count) · 명령어 \(data.commands.count) · "
-            + "훅 \(data.hooks.count) · MCP 서버 \(data.mcpServers.count) 개를 읽었습니다."
+        String(localized: "Read \(data.skills.count) skills · \(data.agents.count) agents · \(data.commands.count) commands · \(data.hooks.count) hooks · \(data.mcpServers.count) MCP servers.")
     }
 
     private func errorCard(_ msg: String) -> some View {
         VStack(alignment: .leading, spacing: Theme.Space.xs) {
-            Label("분석 실패", systemImage: "exclamationmark.triangle.fill")
+            Label("Analysis failed", systemImage: "exclamationmark.triangle.fill")
                 .font(Theme.Typo.label)
                 .foregroundStyle(Theme.error)
             Text(msg).font(Theme.Typo.caption).foregroundStyle(Theme.inkSecondary)
@@ -282,7 +284,7 @@ private struct AnalyzePane: View {
             let reply = try await assistant.service.run(prompt: prompt)
             assistant.suggestions = Self.parse(reply.text)
             if assistant.suggestions.isEmpty, !reply.text.contains("[]") {
-                assistant.error = "The model didn't return a usable list. Raw reply:\n\(reply.text.prefix(300))"
+                assistant.error = String(localized: "The model didn't return a usable list. Raw reply:\n\(reply.text.prefix(300))")
             }
         } catch {
             assistant.error = error.localizedDescription
@@ -338,10 +340,10 @@ private struct SuggestionCard: View {
                             .foregroundStyle(Theme.inkTertiary)
                             .lineLimit(1).truncationMode(.middle).help(path)
                         Spacer()
-                        Button("Finder에서 열기") { reveal(path) }
+                        Button("Reveal in Finder") { reveal(path) }
                             .buttonStyle(GhostButtonStyle())
                         if suggestion.action == "delete", isDeletable(path) {
-                            Button("삭제…") { confirmingDelete = path }
+                            Button("Delete…") { confirmingDelete = path }
                                 .buttonStyle(GhostButtonStyle())
                         }
                     }
@@ -406,7 +408,7 @@ private struct SuggestionCard: View {
     private func delete(_ path: String) {
         let url = URL(fileURLWithPath: path).resolvingSymlinksInPath()
         guard isWithinClaudeDir(url) else {
-            deleteError = "Refusing to delete a path outside ~/.claude"
+            deleteError = String(localized: "Refusing to delete a path outside ~/.claude")
             return
         }
         let backups = FileManager.default.homeDirectoryForCurrentUser
@@ -440,7 +442,7 @@ private struct ChatPane: View {
                 ScrollView {
                     LazyVStack(spacing: Theme.Space.sm) {
                         if messages.isEmpty {
-                            Text("구성에 대해 물어보세요 — “겹치는 스킬이 있어?”, “안전하게 지울 수 있는 건 뭐야?”")
+                            Text("Ask about your config — “Any overlapping skills?”, “What's safe to delete?”")
                                 .font(Theme.Typo.serifBody)
                                 .foregroundStyle(Theme.inkTertiary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -468,9 +470,9 @@ private struct ChatPane: View {
 
     private var inputBar: some View {
         HStack(spacing: Theme.Space.sm) {
-            ThemedField(prompt: "구성에 대해 claude 에게 물어보기…", text: $input)
+            ThemedField(prompt: String(localized: "Ask claude about your config…"), text: $input)
                 .onSubmit(send)
-            Button("보내기", action: send)
+            Button("Send", action: send)
                 .buttonStyle(PrimaryButtonStyle())
                 .disabled(sending || input.trimmingCharacters(in: .whitespaces).isEmpty)
         }

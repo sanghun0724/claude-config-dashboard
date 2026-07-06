@@ -19,10 +19,10 @@ struct AgentsView: View {
             VStack(spacing: 0) {
                 header
                 if agents.isEmpty {
-                    EmptyHint(label: "agents", dir: dir)
+                    EmptyHint(label: String(localized: "agents"), dir: dir)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if filtered.isEmpty {
-                    EmptySearchHint(label: "agents", query: $query)
+                    EmptySearchHint(label: String(localized: "agents"), query: $query)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
@@ -51,7 +51,7 @@ struct AgentsView: View {
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(Theme.inkTertiary)
             Spacer()
-            SearchField(prompt: "Filter agents", text: $query)
+            SearchField(prompt: String(localized: "Filter agents"), text: $query)
                 .frame(width: 200)
         }
         .padding(.horizontal, Theme.Space.xl)

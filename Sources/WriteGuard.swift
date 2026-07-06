@@ -6,8 +6,8 @@ enum WriteGuardError: Error, LocalizedError {
     case noBackup
     var errorDescription: String? {
         switch self {
-        case .staleFile: return "settings.json changed on disk since load. Reload before saving."
-        case .noBackup: return "No backup available to restore."
+        case .staleFile: return String(localized: "settings.json changed on disk since load. Reload before saving.")
+        case .noBackup: return String(localized: "No backup available to restore.")
         }
     }
 }

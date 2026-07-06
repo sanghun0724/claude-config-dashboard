@@ -36,6 +36,7 @@ struct SettingsView: View {
                         },
                         onDelete: { store.removeEnv(id: $0) }
                     )
+                    LanguageSectionCard()
                 }
                 .padding(Theme.Space.lg)
             }
@@ -71,13 +72,13 @@ struct SettingsView: View {
             SegmentedControl(
                 selection: $newKind,
                 options: [
-                    (value: .allow, label: "Allow"),
-                    (value: .ask, label: "Ask"),
-                    (value: .deny, label: "Deny")
+                    (value: .allow, label: PermissionKind.allow.displayLabel),
+                    (value: .ask, label: PermissionKind.ask.displayLabel),
+                    (value: .deny, label: PermissionKind.deny.displayLabel)
                 ]
             )
             .fixedSize()
-            ThemedField(prompt: "Add rule, e.g. Bash(npm run test:*)", text: $newRule)
+            ThemedField(prompt: String(localized: "Add rule, e.g. Bash(npm run test:*)"), text: $newRule)
                 .onSubmit(add)
             Button("Add", action: add)
                 .buttonStyle(GhostButtonStyle())
@@ -110,7 +111,7 @@ private struct PermissionGroupCard: View {
                 Circle()
                     .fill(kind.color)
                     .frame(width: 8, height: 8)
-                Text("\(kind.rawValue) (\(rules.count))")
+                Text("\(kind.displayLabel) (\(rules.count))")
                     .font(Theme.Typo.label)
                     .foregroundStyle(Theme.inkSecondary)
                 Spacer()
@@ -129,7 +130,7 @@ private struct PermissionGroupCard: View {
                             .foregroundStyle(Theme.ink)
                             .textSelection(.enabled)
                         Spacer()
-                        IconButton("trash", role: .destructive, help: "Delete rule") {
+                        IconButton("trash", role: .destructive, help: String(localized: "Delete rule")) {
                             onDelete(rule)
                         }
                     }
@@ -186,12 +187,12 @@ private struct EnvSectionCard: View {
                         .font(Theme.Typo.mono)
                         .foregroundStyle(Theme.ink)
                     Spacer()
-                    ThemedField(prompt: "value", text: $env.value, mono: true, isSecure: !revealed.contains(env.id))
+                    ThemedField(prompt: String(localized: "value"), text: $env.value, mono: true, isSecure: !revealed.contains(env.id))
                         .frame(maxWidth: 240)
-                    IconButton(revealed.contains(env.id) ? "eye.slash" : "eye", help: "Toggle value visibility") {
+                    IconButton(revealed.contains(env.id) ? "eye.slash" : "eye", help: String(localized: "Toggle value visibility")) {
                         if revealed.contains(env.id) { revealed.remove(env.id) } else { revealed.insert(env.id) }
                     }
-                    IconButton("trash", role: .destructive, help: "Delete env var") {
+                    IconButton("trash", role: .destructive, help: String(localized: "Delete env var")) {
                         onDelete(env.id)
                     }
                 }
@@ -206,12 +207,73 @@ private struct EnvSectionCard: View {
 
             HStack(spacing: Theme.Space.sm) {
                 ThemedField(prompt: "NEW_KEY", text: $newEnvKey, mono: true)
-                ThemedField(prompt: "value", text: $newEnvValue, mono: true)
+                ThemedField(prompt: String(localized: "value"), text: $newEnvValue, mono: true)
                 Button("Add") { onAdd() }
                     .buttonStyle(GhostButtonStyle())
                     .disabled(!canAdd)
             }
             .padding(Theme.Space.md)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardSurface()
+    }
+}
+
+// MARK: - Language section card
+
+/// App display language. Takes effect on next launch — SwiftUI/String Catalog resolve
+/// the process's localization once at startup (see `ClaudeConfigDashboardApp.init`), so a
+/// live switch here can't hot-swap already-rendered text; Relaunch Now applies it instantly.
+private struct LanguageSectionCard: View {
+    @AppStorage("appLanguage") private var appLanguage = "system"
+    /// Frozen at first render — the language this process actually launched with.
+    @State private var launchLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "system"
+
+    private let options: [(value: String, label: String)] = [
+        ("system", String(localized: "System")),
+        ("en", "English"),
+        ("ko", "한국어"),
+        ("es", "Español"),
+        ("zh-Hans", "中文"),
+        ("ja", "日本語"),
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: Theme.Space.sm) {
+                Text("Language")
+                    .font(Theme.Typo.label)
+                    .foregroundStyle(Theme.inkSecondary)
+                Spacer()
+            }
+            .padding(Theme.Space.md)
+
+            Rectangle().fill(Theme.divider).frame(height: 1)
+
+            HStack {
+                Picker("", selection: $appLanguage) {
+                    ForEach(options, id: \.value) { option in
+                        Text(option.label).tag(option.value)
+                    }
+                }
+                .labelsHidden()
+                .fixedSize()
+                Spacer()
+            }
+            .padding(Theme.Space.md)
+
+            if appLanguage != launchLanguage {
+                HStack(spacing: Theme.Space.sm) {
+                    Text("Restart to apply the new language.")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Theme.inkTertiary)
+                    Spacer()
+                    Button("Restart Now") { relaunchApp() }
+                        .buttonStyle(GhostButtonStyle())
+                }
+                .padding(.horizontal, Theme.Space.md)
+                .padding(.bottom, Theme.Space.md)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface()

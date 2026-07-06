@@ -10,12 +10,6 @@ enum ConfigSection: String, CaseIterable, Identifiable {
     case assistant = "Assistant"
 
     var id: String { rawValue }
-
-    /// Sidebar display name — English section names, Korean for the analysis tool
-    /// (design: 도구 › 분석).
-    var title: String {
-        self == .assistant ? "분석" : rawValue
-    }
 }
 
 /// Custom two-pane shell. Replaces NavigationSplitView with a hand-built rail + detail.

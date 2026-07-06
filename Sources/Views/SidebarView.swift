@@ -11,9 +11,9 @@ struct SidebarView: View {
     var isScanning: Bool
 
     private static let groups: [(kicker: String, sections: [ConfigSection])] = [
-        ("라이브러리", [.skills, .agents, .commands]),
-        ("시스템", [.hooks, .mcp, .settings]),
-        ("도구", [.assistant]),
+        (String(localized: "Library"), [.skills, .agents, .commands]),
+        (String(localized: "System"), [.hooks, .mcp, .settings]),
+        (String(localized: "Tools"), [.assistant]),
     ]
 
     var body: some View {
@@ -62,7 +62,7 @@ struct SidebarView: View {
                 Text("Claude Config")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.ink)
-                Text("구성 대시보드")
+                Text("Config Dashboard")
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.inkTertiary)
             }
@@ -84,7 +84,7 @@ struct SidebarView: View {
                 BackupBadge(rescanTrigger: isScanning)
                 Spacer()
                 ThemeToggle()
-                IconButton("arrow.clockwise", help: isScanning ? "스캔 중…" : "다시 스캔") {
+                IconButton("arrow.clockwise", help: isScanning ? String(localized: "Scanning…") : String(localized: "Rescan")) {
                     onReload()
                 }
                 .disabled(isScanning)
@@ -95,22 +95,22 @@ struct SidebarView: View {
     }
 }
 
-/// ◐ — cycles 시스템 → 라이트 → 다크 (design: per-window theme toggle).
+/// ◐ — cycles system → light → dark (design: per-window theme toggle).
 private struct ThemeToggle: View {
     @AppStorage("appearance") private var appearance = "system"
 
-    private var label: String {
+    private var help: String {
         switch appearance {
-        case "light": return "라이트"
-        case "dark": return "다크"
-        default: return "시스템"
+        case "light": return String(localized: "Theme · Light")
+        case "dark": return String(localized: "Theme · Dark")
+        default: return String(localized: "Theme · System")
         }
     }
 
     var body: some View {
         IconButton(
             appearance == "dark" ? "circle.righthalf.filled" : "circle.lefthalf.filled",
-            help: "테마 · \(label)"
+            help: help
         ) {
             appearance = appearance == "system" ? "light" : appearance == "light" ? "dark" : "system"
         }
@@ -129,7 +129,7 @@ private struct BackupBadge: View {
             Circle()
                 .fill(latest == nil ? Theme.inkTertiary : Theme.success)
                 .frame(width: 7, height: 7)
-            Text(latest.map { "백업됨 · \(relativeTime($0))" } ?? "백업 없음")
+            Text(latest.map { String(localized: "Backed up · \(relativeTime($0))") } ?? String(localized: "No backup"))
                 .font(.system(size: 11))
         }
         .foregroundStyle(latest == nil ? Theme.inkTertiary : Theme.successInk)
@@ -138,7 +138,7 @@ private struct BackupBadge: View {
         .background(latest == nil ? Theme.divider : Theme.successSoft)
         .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
         .task(id: rescanTrigger) { refresh() }
-        .help("~/.claude/backups 의 최신 백업")
+        .help("Latest backup in ~/.claude/backups")
     }
 
     private func refresh() {
@@ -163,7 +163,7 @@ private struct SidebarRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: Theme.Space.sm) {
-                Text(section.title)
+                Text(LocalizedStringKey(section.rawValue))
                     .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
                     .foregroundStyle(isSelected ? Theme.accentStrong : Theme.inkSecondary)
                 Spacer(minLength: Theme.Space.xs)
@@ -188,7 +188,11 @@ private struct SidebarRow: View {
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
         .motion(Theme.Motion.quick, value: hovering)
-        .accessibilityLabel(count >= 0 ? "\(section.title), \(count) items" : section.title)
+        .accessibilityLabel(
+            count >= 0
+                ? Text(LocalizedStringKey(section.rawValue)) + Text(", \(count) items")
+                : Text(LocalizedStringKey(section.rawValue))
+        )
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

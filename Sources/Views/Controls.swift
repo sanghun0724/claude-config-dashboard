@@ -161,11 +161,11 @@ struct ActionBar<S: GuardedStore>: View {
         HStack(spacing: Theme.Space.lg) {
             HStack(spacing: 8) {
                 Circle().fill(Theme.success).frame(width: 7, height: 7)
-                Text("7중 안전 장치")
+                Text("7-layer safety net")
                     .font(.system(size: 11.5))
                     .foregroundStyle(Theme.successInk)
             }
-            .help("백업 → 원자적 쓰기 → 외부변경 감지 → 검증 · DESIGN-writeback.md")
+            .help("Backup → atomic write → drift detection → verify · DESIGN-writeback.md")
             .onHover { chainExpanded = $0 }
 
             if chainExpanded {
@@ -177,22 +177,22 @@ struct ActionBar<S: GuardedStore>: View {
             Spacer(minLength: Theme.Space.sm)
 
             if store.isStale {
-                Button("다시 읽기") { store.load() }
+                Button("Reload") { store.load() }
                     .buttonStyle(GhostButtonStyle())
-                    .help("디스크에서 다시 읽기 — 열려 있는 동안 파일이 바뀌었어요")
+                    .help("Reload from disk — the file changed while this was open")
             }
-            Button("복원") { store.restore(); onChange() }
+            Button("Restore") { store.restore(); onChange() }
                 .buttonStyle(GhostButtonStyle())
                 .disabled(!store.canRestore)
-                .help("최신 백업으로 되돌리기")
-            Button("되돌리기") { store.discard() }
+                .help("Revert to the latest backup")
+            Button("Discard") { store.discard() }
                 .buttonStyle(GhostButtonStyle())
                 .disabled(!store.hasChanges)
-                .help("열었을 때의 내용으로 되돌리기")
+                .help("Revert to what it was when opened")
             Button {
                 store.save(); onChange()
             } label: {
-                Text(store.hasChanges ? "저장" : "변경 없음")
+                Text(store.hasChanges ? "Save" : "No changes")
                     .contentTransition(.opacity)
             }
             .buttonStyle(PrimaryButtonStyle())
@@ -236,14 +236,19 @@ struct ActionBar<S: GuardedStore>: View {
 
     private var defaultNote: String {
         store.hasChanges
-            ? "저장하면 먼저 백업을 만들고, 원자적으로 교체합니다."
-            : "변경 사항이 없어요. 편집하면 안전망이 함께 움직입니다."
+            ? String(localized: "Saving backs up first, then replaces atomically.")
+            : String(localized: "No changes yet. Editing engages the safety net.")
     }
 
-    /// 백업 → 원자적 쓰기 → 외부변경 감지 → 검증 — mono, arrows dimmed.
+    /// Backup → atomic write → drift detection → verify — mono, arrows dimmed.
     private var safetyChain: some View {
         HStack(spacing: 8) {
-            ForEach(Array(["백업", "원자적 쓰기", "외부변경 감지", "검증"].enumerated()), id: \.offset) { index, step in
+            ForEach(Array([
+                String(localized: "Backup"),
+                String(localized: "Atomic write"),
+                String(localized: "Drift detection"),
+                String(localized: "Verify")
+            ].enumerated()), id: \.offset) { index, step in
                 if index > 0 {
                     Text("→").foregroundStyle(Theme.border)
                 }
