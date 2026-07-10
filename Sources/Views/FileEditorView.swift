@@ -33,10 +33,10 @@ struct FileEditorView: View {
         VStack(spacing: 0) {
             topBar
             if isExternal {
-                WarningBanner(text: "External repo — saving writes to \(path) (outside ~/.claude). Backups still go to ~/.claude/backups.")
+                WarningBanner(text: String(localized: "External repo — saving writes to \(path) (outside ~/.claude). Backups still go to ~/.claude/backups."))
             }
             if store.isLarge {
-                WarningBanner(text: "Large file — typing may lag. Consider an external editor for heavy edits.")
+                WarningBanner(text: String(localized: "Large file — typing may lag. Consider an external editor for heavy edits."))
             }
             FrontmatterCard(text: store.text)
             editorBody

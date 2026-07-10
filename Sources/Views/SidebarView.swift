@@ -139,8 +139,8 @@ private struct BackupBadge: View {
         .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
         .task(id: rescanTrigger) { refresh() }
         .help(latest == nil
-            ? "Backups are created automatically the first time you save — stored in ~/.claude/backups"
-            : "Latest backup in ~/.claude/backups")
+            ? String(localized: "Backups are created automatically the first time you save — stored in ~/.claude/backups")
+            : String(localized: "Latest backup in ~/.claude/backups"))
     }
 
     private func refresh() {

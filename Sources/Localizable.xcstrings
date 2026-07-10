@@ -589,6 +589,34 @@
         }
       }
     },
+    "Ask about your config — “Any overlapping skills?”, “What's safe to delete?”": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pregunta sobre tu configuración — “¿Hay skills que se solapan?”, “¿Qué es seguro borrar?”"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定について質問 — 「重複しているスキルは？」「削除しても安全なものは？」"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구성에 대해 물어보세요 — “겹치는 스킬 있어?”, “뭘 지워도 안전해?”"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "询问你的配置 — “有重复的技能吗？”、“删除什么是安全的？”"
+          }
+        }
+      }
+    },
     "Ask claude about your config…": {
       "localizations": {
         "es": {
@@ -1765,6 +1793,34 @@
         }
       }
     },
+    "Edit %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editar %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ を編集"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 편집"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "编辑 %@"
+          }
+        }
+      }
+    },
     "Editing": {
       "localizations": {
         "es": {
@@ -1957,6 +2013,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "外部"
+          }
+        }
+      }
+    },
+    "External repo — saving writes to %@ (outside ~/.claude). Backups still go to ~/.claude/backups.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repositorio externo — guardar escribe en %@ (fuera de ~/.claude). Las copias de seguridad siguen yendo a ~/.claude/backups."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外部リポジトリ — 保存すると %@ に書き込まれます（~/.claude の外）。バックアップは引き続き ~/.claude/backups に保存されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "외부 저장소 — 저장하면 %@에 기록됩니다(~/.claude 밖). 백업은 여전히 ~/.claude/backups에 저장됩니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外部仓库 — 保存将写入 %@（在 ~/.claude 之外）。备份仍会保存到 ~/.claude/backups。"
           }
         }
       }
@@ -2321,6 +2405,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "大文件 — 输入可能卡顿。大量编辑建议使用外部编辑器。"
+          }
+        }
+      }
+    },
+    "Latest backup in ~/.claude/backups": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Última copia de seguridad en ~/.claude/backups"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最新のバックアップ: ~/.claude/backups"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최신 백업 위치: ~/.claude/backups"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最新备份位于 ~/.claude/backups"
           }
         }
       }
@@ -4617,6 +4729,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "~/.claude.json 不是有效的 JSON — 请在外部修复或恢复备份。"
+          }
+        }
+      }
+    },
+    "~/.claude.json is written by Claude Code at runtime. If it changes while editing, Save is blocked (use Reload). Other keys are preserved.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code escribe ~/.claude.json en tiempo de ejecución. Si cambia mientras editas, Guardar se bloquea (usa Recargar). Las demás claves se conservan."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claude.json は Claude Code が実行時に書き込むファイルです。編集中に変更された場合、保存はブロックされます（再読み込みを使用）。他のキーは保持されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claude.json은 Claude Code가 런타임에 기록하는 파일입니다. 편집 중 변경되면 저장이 차단됩니다(다시 읽기 사용). 다른 키는 보존됩니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claude.json 由 Claude Code 在运行时写入。若在编辑时发生更改，保存将被阻止（请使用重新加载）。其他键会被保留。"
           }
         }
       }

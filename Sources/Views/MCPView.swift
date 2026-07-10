@@ -18,7 +18,7 @@ struct MCPView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
-            WarningBanner(text: "~/.claude.json is written by Claude Code at runtime. If it changes while editing, Save is blocked (use Reload). Other keys are preserved.")
+            WarningBanner(text: String(localized: "~/.claude.json is written by Claude Code at runtime. If it changes while editing, Save is blocked (use Reload). Other keys are preserved."))
             ScrollView {
                 LazyVStack(spacing: Theme.Space.sm) {
                     ForEach($store.servers) { $server in

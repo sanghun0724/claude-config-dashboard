@@ -4,6 +4,8 @@
 
 # Claude Config Dashboard
 
+[![CI](https://github.com/sanghun0724/claude-config-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/sanghun0724/claude-config-dashboard/actions/workflows/ci.yml)
+
 A native macOS (SwiftUI) app that shows your scattered `~/.claude` configuration
 **at a glance**. Skills, agents, settings, hooks, MCP servers, and slash commands —
 all in one structured, searchable window.
