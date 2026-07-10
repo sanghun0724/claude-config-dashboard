@@ -181,10 +181,21 @@ struct ActionBar<S: GuardedStore>: View {
                     .buttonStyle(GhostButtonStyle())
                     .help("Reload from disk — the file changed while this was open")
             }
-            Button("Restore") { store.restore(); onChange() }
-                .buttonStyle(GhostButtonStyle())
-                .disabled(!store.canRestore)
-                .help("Revert to the latest backup")
+            Menu {
+                ForEach(Array(store.backupList.enumerated()), id: \.element) { index, backup in
+                    Button(backupLabel(backup, isLatest: index == 0)) {
+                        store.restore(from: backup)
+                        onChange()
+                    }
+                }
+            } label: {
+                Text("Restore")
+            }
+            .menuStyle(.button)
+            .buttonStyle(GhostButtonStyle())
+            .fixedSize()
+            .disabled(!store.canRestore)
+            .help("Revert to a backup — pick which one")
             Button("Discard") { store.discard() }
                 .buttonStyle(GhostButtonStyle())
                 .disabled(!store.hasChanges)
@@ -238,6 +249,12 @@ struct ActionBar<S: GuardedStore>: View {
         store.hasChanges
             ? String(localized: "Saving backs up first, then replaces atomically.")
             : String(localized: "No changes yet. Editing engages the safety net.")
+    }
+
+    private func backupLabel(_ url: URL, isLatest: Bool) -> String {
+        let date = (try? url.resourceValues(forKeys: [.creationDateKey]))?.creationDate
+        let stamp = date.map { relativeTime($0) } ?? url.lastPathComponent
+        return isLatest ? String(localized: "Latest — \(stamp)") : stamp
     }
 
     /// Backup → atomic write → drift detection → verify — mono, arrows dimmed.

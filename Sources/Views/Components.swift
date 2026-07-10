@@ -96,6 +96,95 @@ struct WarningBanner: View {
     }
 }
 
+// MARK: - Path context menu
+
+/// Right-click actions every displayed file path should offer.
+private struct PathContextMenu: ViewModifier {
+    let path: String
+    func body(content: Content) -> some View {
+        content.contextMenu {
+            Button("Reveal in Finder") {
+                NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
+            }
+            Button("Copy Path") {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(path, forType: .string)
+            }
+        }
+    }
+}
+
+extension View {
+    func pathContextMenu(_ path: String) -> some View {
+        modifier(PathContextMenu(path: path))
+    }
+}
+
+// MARK: - Scaffolding new config files
+
+/// Creates a starter file under `dir` with a collision-free name and returns its
+/// path. `subfile` nests the file in a folder named after the item (skills are
+/// `<name>/SKILL.md`); nil writes `<name>.md` directly. Returns nil on failure.
+func createScaffold(in dir: String, baseName: String, subfile: String?, template: (String) -> String) -> String? {
+    let root = (dir as NSString).expandingTildeInPath
+    let fm = FileManager.default
+    func container(_ name: String) -> String {
+        subfile != nil ? "\(root)/\(name)" : "\(root)/\(name).md"
+    }
+    var name = baseName
+    var counter = 2
+    while fm.fileExists(atPath: container(name)) {
+        name = "\(baseName)-\(counter)"
+        counter += 1
+    }
+    do {
+        let filePath: String
+        if let subfile {
+            try fm.createDirectory(atPath: container(name), withIntermediateDirectories: true)
+            filePath = "\(container(name))/\(subfile)"
+        } else {
+            try fm.createDirectory(atPath: root, withIntermediateDirectories: true)
+            filePath = container(name)
+        }
+        try template(name).write(toFile: filePath, atomically: true, encoding: .utf8)
+        return filePath
+    } catch {
+        return nil
+    }
+}
+
+func skillTemplate(_ name: String) -> String {
+    """
+    ---
+    name: \(name)
+    description: Describe what this skill does and when to use it
+    ---
+
+    Instructions for the skill go here.
+    """
+}
+
+func agentTemplate(_ name: String) -> String {
+    """
+    ---
+    name: \(name)
+    description: Describe what this agent does
+    ---
+
+    System prompt for the agent goes here.
+    """
+}
+
+func commandTemplate(_ name: String) -> String {
+    """
+    ---
+    description: Describe what /\(name) does
+    ---
+
+    Command prompt goes here.
+    """
+}
+
 /// Shared write-back surface contract: the Reload/Restore/Discard/Save quartet that
 /// every guarded editor exposes. Conformers: SettingsStore / MCPStore / TextFileStore.
 @MainActor
@@ -105,8 +194,11 @@ protocol GuardedStore: ObservableObject {
     var hasChanges: Bool { get }
     var statusMessage: String? { get }
     var isError: Bool { get }
+    /// Available backups, newest first — feeds the Restore menu.
+    var backupList: [URL] { get }
     func load()
     func restore()
+    func restore(from backup: URL)
     func save()
     func discard()
 }

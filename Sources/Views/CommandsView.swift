@@ -4,6 +4,13 @@ struct CommandsView: View {
     let commands: [Command]
     var dir: String = "~/.claude/commands"
     var onChange: () -> Void = {}
+    @State private var query = ""
+    @FocusState private var searchFocused: Bool
+
+    private var filtered: [Command] {
+        guard !query.isEmpty else { return commands }
+        return commands.filter { $0.name.localizedCaseInsensitiveContains(query) }
+    }
 
     var body: some View {
         NavigationStack {
@@ -12,10 +19,13 @@ struct CommandsView: View {
                 if commands.isEmpty {
                     EmptyHint(label: String(localized: "commands"), dir: dir)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if filtered.isEmpty {
+                    EmptySearchHint(label: String(localized: "commands"), query: $query)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
                         LazyVStack(spacing: Theme.Space.sm) {
-                            ForEach(commands) { command in
+                            ForEach(filtered) { command in
                                 CommandRow(command: command, onChange: onChange)
                             }
                         }
@@ -26,9 +36,14 @@ struct CommandsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.bg)
         }
+        .background {
+            Button("") { searchFocused = true }
+                .keyboardShortcut("k", modifiers: .command)
+                .hidden()
+        }
     }
 
-    // MARK: - Header (serif title · count)
+    // MARK: - Header (serif title · count · search)
 
     private var header: some View {
         HStack(spacing: Theme.Space.md) {
@@ -39,6 +54,15 @@ struct CommandsView: View {
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(Theme.inkTertiary)
             Spacer()
+            SearchField(prompt: String(localized: "Filter commands"), text: $query, focus: $searchFocused)
+                .frame(width: 200)
+            Button("New") {
+                if createScaffold(in: dir, baseName: "new-command", subfile: nil, template: commandTemplate) != nil {
+                    onChange()
+                }
+            }
+            .buttonStyle(GhostButtonStyle())
+            .help("Create a new command file")
         }
         .padding(.horizontal, Theme.Space.xl)
         .frame(height: Theme.Dim.topBarHeight + 8)
@@ -71,6 +95,7 @@ private struct CommandRow: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .help(command.path)
+                    .pathContextMenu(command.path)
             }
             Spacer(minLength: Theme.Space.sm)
             NavigationLink {

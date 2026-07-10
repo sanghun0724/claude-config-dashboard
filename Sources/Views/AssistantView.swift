@@ -470,6 +470,11 @@ private struct ChatPane: View {
 
     private var inputBar: some View {
         HStack(spacing: Theme.Space.sm) {
+            IconButton("square.and.pencil", help: String(localized: "New conversation")) {
+                assistant.messages = []
+                assistant.sessionId = nil
+            }
+            .disabled(sending || messages.isEmpty)
             ThemedField(prompt: String(localized: "Ask claude about your config…"), text: $input)
                 .onSubmit(send)
             Button("Send", action: send)

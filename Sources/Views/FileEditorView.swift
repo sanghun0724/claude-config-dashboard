@@ -8,6 +8,7 @@ struct FileEditorView: View {
     let path: String
     var onChange: () -> Void = {}
     @StateObject private var store: TextFileStore
+    @EnvironmentObject private var editorDirty: EditorDirtyState
     @Environment(\.dismiss) private var dismiss
     @State private var confirmingDelete = false
     @AppStorage("editorMode") private var mode: EditorMode = .live
@@ -34,6 +35,9 @@ struct FileEditorView: View {
             if isExternal {
                 WarningBanner(text: "External repo — saving writes to \(path) (outside ~/.claude). Backups still go to ~/.claude/backups.")
             }
+            if store.isLarge {
+                WarningBanner(text: "Large file — typing may lag. Consider an external editor for heavy edits.")
+            }
             FrontmatterCard(text: store.text)
             editorBody
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -45,11 +49,17 @@ struct FileEditorView: View {
                 Button("") { mode = .raw }.keyboardShortcut("1", modifiers: .command)
                 Button("") { mode = .live }.keyboardShortcut("2", modifiers: .command)
                 Button("") { mode = .preview }.keyboardShortcut("3", modifiers: .command)
-                Button("") { if mode == .live { findTrigger += 1 } }.keyboardShortcut("f", modifiers: .command)
+                // Live only — in Raw mode ⌘F must fall through to the system
+                // find bar of the TextEditor instead of being swallowed here.
+                if mode == .live {
+                    Button("") { findTrigger += 1 }.keyboardShortcut("f", modifiers: .command)
+                }
             }
             .hidden()
         }
         .navigationTitle(title)
+        .onChange(of: store.hasChanges) { _, dirty in editorDirty.isDirty = dirty }
+        .onDisappear { editorDirty.isDirty = false }
         .confirmationDialog("Delete \(title)?", isPresented: $confirmingDelete, titleVisibility: .visible) {
             Button("Delete file", role: .destructive) {
                 if store.delete() {

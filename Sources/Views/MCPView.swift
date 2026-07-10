@@ -1,8 +1,19 @@
 import SwiftUI
 
 struct MCPView: View {
-    @StateObject private var store = MCPStore()
+    // Owned by AppShell so unsaved edits survive sidebar section switches.
+    @ObservedObject var store: MCPStore
     var onChange: () -> Void = {}
+    @State private var query = ""
+    @FocusState private var searchFocused: Bool
+
+    private func matches(_ server: MCPEdit) -> Bool {
+        query.isEmpty ||
+        server.name.localizedCaseInsensitiveContains(query) ||
+        server.command.localizedCaseInsensitiveContains(query) ||
+        server.args.localizedCaseInsensitiveContains(query) ||
+        server.url.localizedCaseInsensitiveContains(query)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -11,8 +22,10 @@ struct MCPView: View {
             ScrollView {
                 LazyVStack(spacing: Theme.Space.sm) {
                     ForEach($store.servers) { $server in
-                        MCPServerCard(server: $server) {
-                            store.remove(id: server.id)
+                        if matches(server) {
+                            MCPServerCard(server: $server) {
+                                store.remove(id: server.id)
+                            }
                         }
                     }
                     Button {
@@ -33,6 +46,11 @@ struct MCPView: View {
             ActionBar(store: store, onChange: onChange)
         }
         .statusFade(value: store.statusMessage)
+        .background {
+            Button("") { searchFocused = true }
+                .keyboardShortcut("k", modifiers: .command)
+                .hidden()
+        }
     }
 
     private var header: some View {
@@ -44,6 +62,8 @@ struct MCPView: View {
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(Theme.inkTertiary)
             Spacer()
+            SearchField(prompt: String(localized: "Filter servers"), text: $query, focus: $searchFocused)
+                .frame(width: 200)
         }
         .padding(.horizontal, Theme.Space.xl)
         .frame(height: Theme.Dim.topBarHeight + 8)

@@ -7,6 +7,8 @@ struct HooksView: View {
     @State private var newEvent = ""
     @State private var newMatcher = ""
     @State private var newCommand = ""
+    @State private var query = ""
+    @FocusState private var searchFocused: Bool
 
     private let events = [
         "PreToolUse", "PostToolUse", "PostToolUseFailure", "UserPromptSubmit",
@@ -17,12 +19,21 @@ struct HooksView: View {
         !newEvent.isEmpty && !newCommand.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
+    private var filteredHooks: [HookEditEntry] {
+        guard !query.isEmpty else { return store.hookEntries }
+        return store.hookEntries.filter {
+            $0.event.localizedCaseInsensitiveContains(query) ||
+            $0.matcher.localizedCaseInsensitiveContains(query) ||
+            $0.commands.contains { $0.localizedCaseInsensitiveContains(query) }
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             header
             ScrollView {
                 LazyVStack(spacing: Theme.Space.sm) {
-                    ForEach(store.hookEntries) { hook in
+                    ForEach(filteredHooks) { hook in
                         HookCard(hook: hook) {
                             store.removeHook(id: hook.id)
                         }
@@ -49,6 +60,11 @@ struct HooksView: View {
             ActionBar(store: store, onChange: onChange)
         }
         .statusFade(value: store.statusMessage)
+        .background {
+            Button("") { searchFocused = true }
+                .keyboardShortcut("k", modifiers: .command)
+                .hidden()
+        }
     }
 
     private var header: some View {
@@ -60,6 +76,8 @@ struct HooksView: View {
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(Theme.inkTertiary)
             Spacer()
+            SearchField(prompt: String(localized: "Filter hooks"), text: $query, focus: $searchFocused)
+                .frame(width: 200)
         }
         .padding(.horizontal, Theme.Space.xl)
         .frame(height: Theme.Dim.topBarHeight + 8)
@@ -84,6 +102,10 @@ private struct HookCard: View {
                 Chip(text: "matcher: \(hook.matcher)")
                 if hook.raw == nil {
                     Chip(text: "new", tone: .accent)
+                }
+                if hook.otherHookCount > 0 {
+                    Chip(text: String(localized: "+\(hook.otherHookCount) non-command"))
+                        .help("This group also holds \(hook.otherHookCount) non-command hook(s) (url/mcp). They're preserved on save — but deleting this group deletes them too.")
                 }
                 Spacer()
                 IconButton("trash", role: .destructive, help: String(localized: "Delete hook")) {

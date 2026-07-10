@@ -28,6 +28,8 @@ struct ClaudeConfigDashboardApp: App {
         }
         .defaultSize(width: 1180, height: 800)
         .windowToolbarStyle(.unified)
+        // Standard Find menu items, so ⌘F reaches the raw-mode TextEditor's find bar.
+        .commands { TextEditingCommands() }
     }
 }
 

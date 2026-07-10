@@ -12,21 +12,32 @@ enum ConfigSection: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+/// FileEditorView (deep inside a section's NavigationStack) reports unsaved text
+/// edits here, so the sidebar can warn before a section switch tears the editor
+/// down and silently discards them.
+@MainActor
+final class EditorDirtyState: ObservableObject {
+    @Published var isDirty = false
+}
+
 /// Custom two-pane shell. Replaces NavigationSplitView with a hand-built rail + detail.
 /// Owns `selection` and the single shared `SettingsStore` (Hooks and Settings edit the
 /// same settings.json — they MUST share one instance). Scan runs off the main thread.
 struct AppShell: View {
     @State private var data = ConfigData.empty
-    @State private var selection: ConfigSection = .skills
+    @AppStorage("selectedSection") private var selection: ConfigSection = .skills
+    @State private var pendingSelection: ConfigSection?
     @State private var isScanning = false
     @State private var hasLoaded = false
     @StateObject private var settings = SettingsStore()
+    @StateObject private var mcp = MCPStore()
     @StateObject private var assistant = AssistantStore()
+    @StateObject private var editorDirty = EditorDirtyState()
 
     var body: some View {
         HStack(spacing: 0) {
             SidebarView(
-                selection: $selection,
+                selection: guardedSelection,
                 counts: count,
                 onReload: { Task { await reload() } },
                 isScanning: isScanning
@@ -35,7 +46,40 @@ struct AppShell: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.bg)
+        .environmentObject(editorDirty)
         .task { await reload() }
+        .confirmationDialog(
+            "Discard unsaved changes?",
+            isPresented: Binding(
+                get: { pendingSelection != nil },
+                set: { if !$0 { pendingSelection = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Discard Changes", role: .destructive) {
+                if let pending = pendingSelection { selection = pending }
+                pendingSelection = nil
+                editorDirty.isDirty = false
+            }
+            Button("Cancel", role: .cancel) { pendingSelection = nil }
+        } message: {
+            Text("The open editor has unsaved changes. Switching sections closes it and loses them.")
+        }
+    }
+
+    /// Routes sidebar clicks through the unsaved-editor check.
+    private var guardedSelection: Binding<ConfigSection> {
+        Binding(
+            get: { selection },
+            set: { newSection in
+                guard newSection != selection else { return }
+                if editorDirty.isDirty {
+                    pendingSelection = newSection
+                } else {
+                    selection = newSection
+                }
+            }
+        )
     }
 
     @ViewBuilder
@@ -61,11 +105,11 @@ struct AppShell: View {
         case .commands:
             CommandsView(commands: data.commands, dir: "\(data.claudeDir)/commands", onChange: triggerReload)
         case .mcp:
-            MCPView(onChange: triggerReload)
+            MCPView(store: mcp, onChange: triggerReload)
         case .hooks:
             HooksView(store: settings, onChange: triggerReload)
         case .settings:
-            SettingsView(store: settings, onChange: triggerReload)
+            SettingsView(store: settings, extraUnsaved: mcp.hasChanges, onChange: triggerReload)
         case .assistant:
             AssistantView(data: data, assistant: assistant, onChange: triggerReload)
         }

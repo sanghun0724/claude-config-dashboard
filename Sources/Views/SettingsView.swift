@@ -2,15 +2,26 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var store: SettingsStore
+    /// Unsaved work living outside this store (e.g. MCP edits held by AppShell) —
+    /// folded into the Restart Now warning so a relaunch can't silently drop it.
+    var extraUnsaved: Bool = false
     var onChange: () -> Void = {}
 
     @State private var newRule = ""
     @State private var newKind: PermissionKind = .allow
     @State private var newEnvKey = ""
     @State private var newEnvValue = ""
+    @State private var query = ""
+    @FocusState private var searchFocused: Bool
 
     private var canAdd: Bool {
         !newRule.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private func filteredRules(_ kind: PermissionKind) -> [String] {
+        let rules = store.rules(kind)
+        guard !query.isEmpty else { return rules }
+        return rules.filter { $0.localizedCaseInsensitiveContains(query) }
     }
 
     var body: some View {
@@ -21,12 +32,13 @@ struct SettingsView: View {
                     ForEach(PermissionKind.allCases) { kind in
                         PermissionGroupCard(
                             kind: kind,
-                            rules: store.rules(kind),
+                            rules: filteredRules(kind),
                             onDelete: { store.removeRule(kind, value: $0) }
                         )
                     }
                     EnvSectionCard(
                         envVars: $store.envVars,
+                        query: query,
                         newEnvKey: $newEnvKey,
                         newEnvValue: $newEnvValue,
                         onAdd: {
@@ -36,7 +48,7 @@ struct SettingsView: View {
                         },
                         onDelete: { store.removeEnv(id: $0) }
                     )
-                    LanguageSectionCard()
+                    LanguageSectionCard(unsaved: store.hasChanges || extraUnsaved)
                 }
                 .padding(Theme.Space.lg)
             }
@@ -50,6 +62,11 @@ struct SettingsView: View {
             ActionBar(store: store, onChange: onChange)
         }
         .statusFade(value: store.statusMessage)
+        .background {
+            Button("") { searchFocused = true }
+                .keyboardShortcut("k", modifiers: .command)
+                .hidden()
+        }
     }
 
     private var header: some View {
@@ -61,6 +78,8 @@ struct SettingsView: View {
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(Theme.inkTertiary)
             Spacer()
+            SearchField(prompt: String(localized: "Filter rules & env"), text: $query, focus: $searchFocused)
+                .frame(width: 200)
         }
         .padding(.horizontal, Theme.Space.xl)
         .frame(height: Theme.Dim.topBarHeight + 8)
@@ -155,6 +174,7 @@ private struct PermissionGroupCard: View {
 
 private struct EnvSectionCard: View {
     @Binding var envVars: [EnvVar]
+    var query: String = ""
     @Binding var newEnvKey: String
     @Binding var newEnvValue: String
     let onAdd: () -> Void
@@ -182,6 +202,7 @@ private struct EnvSectionCard: View {
                 .frame(height: 1)
 
             ForEach($envVars) { $env in
+                if query.isEmpty || env.key.localizedCaseInsensitiveContains(query) {
                 HStack(spacing: Theme.Space.sm) {
                     Text(env.key)
                         .font(Theme.Typo.mono)
@@ -203,6 +224,7 @@ private struct EnvSectionCard: View {
                     .fill(Theme.divider)
                     .frame(height: 1)
                     .padding(.leading, Theme.Space.md)
+                }
             }
 
             HStack(spacing: Theme.Space.sm) {
@@ -225,9 +247,12 @@ private struct EnvSectionCard: View {
 /// the process's localization once at startup (see `ClaudeConfigDashboardApp.init`), so a
 /// live switch here can't hot-swap already-rendered text; Relaunch Now applies it instantly.
 private struct LanguageSectionCard: View {
+    /// Unsaved edits anywhere in the app — restart confirmation instead of silent loss.
+    var unsaved: Bool = false
     @AppStorage("appLanguage") private var appLanguage = "system"
     /// Frozen at first render — the language this process actually launched with.
     @State private var launchLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "system"
+    @State private var confirmingRestart = false
 
     private let options: [(value: String, label: String)] = [
         ("system", String(localized: "System")),
@@ -268,8 +293,10 @@ private struct LanguageSectionCard: View {
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.inkTertiary)
                     Spacer()
-                    Button("Restart Now") { relaunchApp() }
-                        .buttonStyle(GhostButtonStyle())
+                    Button("Restart Now") {
+                        if unsaved { confirmingRestart = true } else { relaunchApp() }
+                    }
+                    .buttonStyle(GhostButtonStyle())
                 }
                 .padding(.horizontal, Theme.Space.md)
                 .padding(.bottom, Theme.Space.md)
@@ -277,5 +304,11 @@ private struct LanguageSectionCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface()
+        .confirmationDialog("Restart with unsaved changes?", isPresented: $confirmingRestart, titleVisibility: .visible) {
+            Button("Restart Anyway", role: .destructive) { relaunchApp() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("There are unsaved changes that will be lost on restart. Save them first if you want to keep them.")
+        }
     }
 }

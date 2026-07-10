@@ -71,6 +71,14 @@ struct SkillsView: View {
             Spacer()
             SearchField(prompt: String(localized: "Search skills"), text: $query, focus: $searchFocused)
                 .frame(width: 200)
+            Button("New") {
+                if let path = createScaffold(in: dir, baseName: "new-skill", subfile: "SKILL.md", template: skillTemplate) {
+                    selectedPath = path
+                    onChange()
+                }
+            }
+            .buttonStyle(GhostButtonStyle())
+            .help("Create a new skill (folder + SKILL.md)")
             SegmentedControl(
                 selection: $viewMode,
                 options: [
@@ -238,6 +246,7 @@ private struct ReadingPane: View {
                             .strokeBorder(Theme.border, lineWidth: 1)
                     )
                     .help(skill.path)
+                    .pathContextMenu(skill.path)
                     .padding(.bottom, 20)
 
                 Rectangle().fill(Theme.border).frame(height: 1)

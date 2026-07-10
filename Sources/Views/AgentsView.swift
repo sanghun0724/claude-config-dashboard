@@ -5,6 +5,7 @@ struct AgentsView: View {
     var dir: String = "~/.claude/agents"
     var onChange: () -> Void = {}
     @State private var query = ""
+    @FocusState private var searchFocused: Bool
 
     private var filtered: [Agent] {
         guard !query.isEmpty else { return agents }
@@ -38,6 +39,11 @@ struct AgentsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.bg)
         }
+        .background {
+            Button("") { searchFocused = true }
+                .keyboardShortcut("k", modifiers: .command)
+                .hidden()
+        }
     }
 
     // MARK: - Header (serif title · count · search)
@@ -51,8 +57,15 @@ struct AgentsView: View {
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(Theme.inkTertiary)
             Spacer()
-            SearchField(prompt: String(localized: "Filter agents"), text: $query)
+            SearchField(prompt: String(localized: "Filter agents"), text: $query, focus: $searchFocused)
                 .frame(width: 200)
+            Button("New") {
+                if createScaffold(in: dir, baseName: "new-agent", subfile: nil, template: agentTemplate) != nil {
+                    onChange()
+                }
+            }
+            .buttonStyle(GhostButtonStyle())
+            .help("Create a new agent file")
         }
         .padding(.horizontal, Theme.Space.xl)
         .frame(height: Theme.Dim.topBarHeight + 8)
@@ -113,6 +126,7 @@ private struct AgentCard: View {
                 .lineLimit(1)
                 .truncationMode(.middle)
                 .help(agent.path)
+                .pathContextMenu(agent.path)
         }
         .padding(Theme.Space.md)
         .frame(maxWidth: .infinity, alignment: .leading)
