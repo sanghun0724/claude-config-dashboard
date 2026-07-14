@@ -75,6 +75,12 @@ your user. Review the source before running a build you didn't compile yourself.
 
 ## Install
 
+### Homebrew
+
+```sh
+brew install --cask sanghun0724/tap/configdeck
+```
+
 ### Download
 
 Grab the latest `.zip` from [Releases](https://github.com/sanghun0724/configdeck/releases),
