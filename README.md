@@ -7,6 +7,8 @@
 [![CI](https://github.com/sanghun0724/configdeck/actions/workflows/ci.yml/badge.svg)](https://github.com/sanghun0724/configdeck/actions/workflows/ci.yml)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/sh_brady)
 
+**English** | [한국어](README.ko.md)
+
 A native macOS (SwiftUI) app that shows your scattered `~/.claude` configuration
 **at a glance**. Skills, agents, settings, hooks, MCP servers, and slash commands —
 all in one structured, searchable window.
