@@ -5,6 +5,7 @@
 # Claude Config Dashboard
 
 [![CI](https://github.com/sanghun0724/claude-config-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/sanghun0724/claude-config-dashboard/actions/workflows/ci.yml)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/sh_brady)
 
 A native macOS (SwiftUI) app that shows your scattered `~/.claude` configuration
 **at a glance**. Skills, agents, settings, hooks, MCP servers, and slash commands —
@@ -14,7 +15,12 @@ all in one structured, searchable window.
 > across dozens of files. Read-first design: browsing never touches your files, and
 > every edit goes through an explicit Save with a backup taken first.
 
-<!-- TODO: hero screenshot — docs/screenshot.png (full window, light mode) -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
+    <img src="docs/screenshot-light.png" width="820" alt="Claude Config Dashboard — Skills section with detail view" />
+  </picture>
+</p>
 
 ## Why
 
@@ -24,6 +30,11 @@ Claude Code config lives across many files and directories (`skills/`, `agents/`
 everything you've set up.
 
 ## Features (v1)
+
+<p align="center">
+  <img src="docs/demo.gif" width="820" alt="Demo — filter skills with search, open the markdown editor, browse Agents, Hooks and Settings" />
+</p>
+<p align="center"><sub>Search skills → markdown editor with frontmatter highlighting → Agents · Hooks · Settings</sub></p>
 
 | Section | Shows | Editing |
 |---------|-------|---------|
@@ -103,6 +114,12 @@ and `~/.claude.json` are created on your first save.
 ## Contributing
 
 Small project, simple rules — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Support
+
+If you find Claude Config Dashboard useful, consider buying me a coffee!
+
+<a href="https://buymeacoffee.com/sh_brady" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200"></a>
 
 ## License
 
