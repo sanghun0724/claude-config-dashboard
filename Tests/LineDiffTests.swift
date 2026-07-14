@@ -1,5 +1,5 @@
 import XCTest
-@testable import ClaudeConfigDashboard
+@testable import ConfigDeck
 
 final class LineDiffTests: XCTestCase {
     private func render(_ lines: [LineDiff.Line]) -> [String] {

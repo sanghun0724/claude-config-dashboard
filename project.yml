@@ -1,6 +1,6 @@
-name: ClaudeConfigDashboard
+name: ConfigDeck
 options:
-  bundleIdPrefix: com.claudeconfigdashboard
+  bundleIdPrefix: com.configdeck
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
@@ -11,14 +11,14 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
     GENERATE_INFOPLIST_FILE: YES
     ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-    INFOPLIST_KEY_CFBundleDisplayName: "Claude Config Dashboard"
+    INFOPLIST_KEY_CFBundleDisplayName: "ConfigDeck"
     INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.developer-tools"
     INFOPLIST_KEY_NSHumanReadableCopyright: "© 2026 sanghun0724 — MIT License"
     ENABLE_HARDENED_RUNTIME: YES
     CODE_SIGN_STYLE: Automatic
     DEAD_CODE_STRIPPING: YES
 targets:
-  ClaudeConfigDashboard:
+  ConfigDeck:
     type: application
     platform: macOS
     sources:
@@ -29,11 +29,11 @@ targets:
           - ".omc/**"
     settings:
       base:
-        PRODUCT_NAME: ClaudeConfigDashboard
-        PRODUCT_BUNDLE_IDENTIFIER: com.claudeconfigdashboard.ClaudeConfigDashboard
+        PRODUCT_NAME: ConfigDeck
+        PRODUCT_BUNDLE_IDENTIFIER: com.configdeck.ConfigDeck
         # Unsandboxed: this tool reads ~/.claude in the user's home directory.
         ENABLE_APP_SANDBOX: NO
-  ClaudeConfigDashboardTests:
+  ConfigDeckTests:
     type: bundle.unit-test
     platform: macOS
     sources:
@@ -41,19 +41,19 @@ targets:
     # App-hosted tests: @testable import reaches every internal type (stores,
     # MCPEdit, …) without listing source files here one by one.
     dependencies:
-      - target: ClaudeConfigDashboard
+      - target: ConfigDeck
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.claudeconfigdashboard.ClaudeConfigDashboardTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.configdeck.ConfigDeckTests
         GENERATE_INFOPLIST_FILE: YES
 schemes:
-  ClaudeConfigDashboard:
+  ConfigDeck:
     build:
       targets:
-        ClaudeConfigDashboard: all
-        ClaudeConfigDashboardTests: [test]
+        ConfigDeck: all
+        ConfigDeckTests: [test]
     test:
       targets:
-        - ClaudeConfigDashboardTests
+        - ConfigDeckTests
     run:
       config: Debug

@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 @main
-struct ClaudeConfigDashboardApp: App {
+struct ConfigDeckApp: App {
     /// ◐ light/dark override (design: per-window theme toggle). "system" follows macOS.
     @AppStorage("appearance") private var appearance = "system"
     /// UI display language. "system" follows macOS; anything else needs a relaunch to

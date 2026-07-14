@@ -1,5 +1,5 @@
 import XCTest
-@testable import ClaudeConfigDashboard
+@testable import ConfigDeck
 
 /// Untouched env values must keep their original JSON type on save —
 /// only entries the user actually edited become strings.

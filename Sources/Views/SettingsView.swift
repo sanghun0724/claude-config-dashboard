@@ -244,7 +244,7 @@ private struct EnvSectionCard: View {
 // MARK: - Language section card
 
 /// App display language. Takes effect on next launch — SwiftUI/String Catalog resolve
-/// the process's localization once at startup (see `ClaudeConfigDashboardApp.init`), so a
+/// the process's localization once at startup (see `ConfigDeckApp.init`), so a
 /// live switch here can't hot-swap already-rendered text; Relaunch Now applies it instantly.
 private struct LanguageSectionCard: View {
     /// Unsaved edits anywhere in the app — restart confirmation instead of silent loss.

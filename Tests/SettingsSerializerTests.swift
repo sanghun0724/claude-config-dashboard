@@ -1,5 +1,5 @@
 import XCTest
-@testable import ClaudeConfigDashboard
+@testable import ConfigDeck
 
 final class SettingsSerializerTests: XCTestCase {
 

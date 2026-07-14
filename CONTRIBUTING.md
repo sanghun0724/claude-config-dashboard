@@ -8,16 +8,16 @@ PR is low ceremony, high clarity.
 ```sh
 brew install xcodegen
 xcodegen generate
-open ClaudeConfigDashboard.xcodeproj
+open ConfigDeck.xcodeproj
 ```
 
-The Xcode project is generated — never commit `ClaudeConfigDashboard.xcodeproj`
+The Xcode project is generated — never commit `ConfigDeck.xcodeproj`
 (it's gitignored). If you add/remove files, re-run `xcodegen generate`.
 
 ## Before you open a PR
 
-- `xcodebuild -scheme ClaudeConfigDashboard build` passes with no warnings.
-- `xcodebuild -scheme ClaudeConfigDashboard test` passes.
+- `xcodebuild -scheme ConfigDeck build` passes with no warnings.
+- `xcodebuild -scheme ConfigDeck test` passes.
 - Anything touching the write path (WriteGuard, stores, serializers) comes
   with a test. The whole point of this app is not eating people's config.
 - New user-facing strings go into `Sources/Localizable.xcstrings` with

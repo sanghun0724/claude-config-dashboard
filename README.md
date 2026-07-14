@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="docs/icon-1024.png" width="128" alt="Claude Config Dashboard icon" />
+  <img src="docs/icon-1024.png" width="128" alt="ConfigDeck icon" />
 </p>
 
-# Claude Config Dashboard
+# ConfigDeck
 
-[![CI](https://github.com/sanghun0724/claude-config-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/sanghun0724/claude-config-dashboard/actions/workflows/ci.yml)
+[![CI](https://github.com/sanghun0724/configdeck/actions/workflows/ci.yml/badge.svg)](https://github.com/sanghun0724/configdeck/actions/workflows/ci.yml)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/sh_brady)
 
 A native macOS (SwiftUI) app that shows your scattered `~/.claude` configuration
@@ -18,7 +18,7 @@ all in one structured, searchable window.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
-    <img src="docs/screenshot-light.png" width="820" alt="Claude Config Dashboard — Skills section with detail view" />
+    <img src="docs/screenshot-light.png" width="820" alt="ConfigDeck — Skills section with detail view" />
   </picture>
 </p>
 
@@ -77,14 +77,14 @@ your user. Review the source before running a build you didn't compile yourself.
 
 ### Download
 
-Grab the latest `.zip` from [Releases](https://github.com/sanghun0724/claude-config-dashboard/releases),
-unzip, and drag `ClaudeConfigDashboard.app` to Applications.
+Grab the latest `.zip` from [Releases](https://github.com/sanghun0724/configdeck/releases),
+unzip, and drag `ConfigDeck.app` to Applications.
 
 The app is not notarized yet. On first launch macOS will block it — either
 right-click the app → **Open** → **Open**, or clear the quarantine flag:
 
 ```sh
-xattr -cr /Applications/ClaudeConfigDashboard.app
+xattr -cr /Applications/ConfigDeck.app
 ```
 
 ### Build from source
@@ -94,9 +94,9 @@ Requires macOS 14+, Xcode 15+, and [`xcodegen`](https://github.com/yonaskolb/Xco
 ```sh
 brew install xcodegen
 xcodegen generate
-open ClaudeConfigDashboard.xcodeproj
+open ConfigDeck.xcodeproj
 # ⌘R to run, or:
-xcodebuild -scheme ClaudeConfigDashboard -configuration Debug build
+xcodebuild -scheme ConfigDeck -configuration Debug build
 ```
 
 The app reads from `~/.claude` and `~/.claude.json` in your home directory.
@@ -117,7 +117,7 @@ Small project, simple rules — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Support
 
-If you find Claude Config Dashboard useful, consider buying me a coffee!
+If you find ConfigDeck useful, consider buying me a coffee!
 
 <a href="https://buymeacoffee.com/sh_brady" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200"></a>
 
