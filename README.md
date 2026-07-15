@@ -107,22 +107,6 @@ notarized yet, so on first launch macOS will block it. Either run
 **System Settings → Privacy & Security** and click **Open Anyway**
 (on macOS 14 you can also right-click the app → **Open** → **Open**).
 
-### Build from source
-
-Requires macOS 14+, Xcode 15+, and [`xcodegen`](https://github.com/yonaskolb/XcodeGen):
-
-```sh
-brew install xcodegen
-xcodegen generate
-open ConfigDeck.xcodeproj
-# ⌘R to run, or:
-xcodebuild -scheme ConfigDeck -configuration Debug build
-```
-
-The app reads from `~/.claude` and `~/.claude.json` in your home directory.
-If you don't use Claude Code yet, sections will be empty — `settings.json`
-and `~/.claude.json` are created on your first save.
-
 ## Roadmap
 
 - ✅ Safe editing across all sections (permissions, env, hooks, MCP, markdown files)
