@@ -1205,34 +1205,6 @@
         }
       }
     },
-    "Config Dashboard": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Panel de configuración"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定ダッシュボード"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "구성 대시보드"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "配置控制台"
-          }
-        }
-      }
-    },
     "Configuration item name": {
       "localizations": {
         "es": {
@@ -4981,6 +4953,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "值"
+          }
+        }
+      }
+    },
+    "~/.claude at a glance": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claude de un vistazo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claudeをひと目で"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claude 한눈에"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一目了然的 ~/.claude"
           }
         }
       }

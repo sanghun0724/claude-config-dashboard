@@ -53,16 +53,15 @@ struct SidebarView: View {
 
     private var logo: some View {
         HStack(spacing: 10) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Theme.accent)
-                .frame(width: 28, height: 28)
-                .overlay(Circle().fill(Color.hex(0xFBF9F4)).frame(width: 9, height: 9))
+            Image(nsImage: NSApp.applicationIconImage)
+                .resizable()
+                .frame(width: 30, height: 30)
                 .shadow(color: Theme.shadow.opacity(0.15), radius: 3, y: 1)
             VStack(alignment: .leading, spacing: 1) {
-                Text("Claude Config")
+                Text(verbatim: "ConfigDeck")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.ink)
-                Text("Config Dashboard")
+                Text("~/.claude at a glance")
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.inkTertiary)
             }
